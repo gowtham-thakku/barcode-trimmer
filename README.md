@@ -40,7 +40,7 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
    cd barcode-trimmer
 2. **Install dependencies:**
    ```bash
-   pip install streamlit biopython parasail-python
+   pip install streamlit biopython parasail
 3. **Run with desired upload limit:**
    ```bash
    # For 5GB limit
