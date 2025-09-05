@@ -28,7 +28,7 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 - Private - your data never leaves your computer
 
 ⚠️ **Cons:**
-- Local installation needed
+- Local installation needed (but only 3-4 lines of command line code! A local instance of the app will be launched on your browser)
 
 **Best for:** Large files (>200MB), sensitive data, high-performance processing
 
