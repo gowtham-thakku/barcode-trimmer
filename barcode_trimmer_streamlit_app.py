@@ -25,7 +25,7 @@ except ImportError:
 
 # Configure page
 st.set_page_config(
-    page_title="Mid-Read Barcode Trimmer",
+    page_title="Barcode Trimmer",
     page_icon="🧬",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -97,7 +97,7 @@ def file_format_from_name(filename):
         return "fastq"
     return "fastq"  # default
 
-def filter_reads_web(adapter_content, reads_content, reads_filename, params):
+def filter_reads_web(adapter_content, reads_content, reads_filename, params, progress_placeholder=None):
     """
     Web version of your filter_reads_parasail function.
     Returns (kept_content, discarded_content, log_content).
@@ -105,7 +105,7 @@ def filter_reads_web(adapter_content, reads_content, reads_filename, params):
     
     if not DEPENDENCIES_AVAILABLE:
         # Fallback implementation without parasail
-        return simple_filter_fallback(adapter_content, reads_content, reads_filename, params)
+        return simple_filter_fallback(adapter_content, reads_content, reads_filename, params, progress_placeholder)
     
     # Load adapters
     adapters = load_adapters(adapter_content)
@@ -117,12 +117,19 @@ def filter_reads_web(adapter_content, reads_content, reads_filename, params):
     fmt = file_format_from_name(reads_filename)
     reads_io = io.StringIO(reads_content)
     
+    # First pass to count total reads for progress tracking
+    total_reads = 0
+    for _ in SeqIO.parse(io.StringIO(reads_content), fmt):
+        total_reads += 1
+    
+    # Second pass for actual processing
+    reads_io = io.StringIO(reads_content)
     kept_reads = []
     discarded_reads = []
-    total = 0
+    processed = 0
     
     for rec in SeqIO.parse(reads_io, fmt):
-        total += 1
+        processed += 1
         seq = str(rec.seq).upper()
         contaminated = False
         
@@ -136,6 +143,14 @@ def filter_reads_web(adapter_content, reads_content, reads_filename, params):
             discarded_reads.append(rec)
         else:
             kept_reads.append(rec)
+        
+        # Update progress every 100 reads
+        if progress_placeholder and processed % 100 == 0:
+            progress_placeholder.text(f"Processing reads: {processed:,}/{total_reads:,}")
+    
+    # Final progress update
+    if progress_placeholder:
+        progress_placeholder.text(f"Processing reads: {total_reads:,}/{total_reads:,}")
     
     # Generate output content
     kept_io = io.StringIO()
@@ -157,7 +172,7 @@ Parameters:
 
 Input File: {reads_filename}
 Format: {fmt.upper()}
-Total reads: {total:,}
+Total reads: {total_reads:,}
 Adapters loaded: {len(adapters) // 2}
 
 Results:
@@ -168,7 +183,7 @@ Completed: {datetime.now().isoformat()}
     
     return kept_content, discarded_content, log_content
 
-def simple_filter_fallback(adapter_content, reads_content, reads_filename, params):
+def simple_filter_fallback(adapter_content, reads_content, reads_filename, params, progress_placeholder=None):
     """Simplified filtering when parasail is not available."""
     
     # Parse adapters (simplified)
@@ -196,11 +211,13 @@ def simple_filter_fallback(adapter_content, reads_content, reads_filename, param
     total = 0
     kept_count = 0
     discarded_count = 0
+    processed = 0
     
     if fmt == 'fastq':
+        total_reads = len(reads_lines) // 4
         for i in range(0, len(reads_lines), 4):
             if i + 3 < len(reads_lines):
-                total += 1
+                processed += 1
                 seq = reads_lines[i + 1].strip().upper()
                 
                 # Simple contamination check
@@ -213,7 +230,20 @@ def simple_filter_fallback(adapter_content, reads_content, reads_filename, param
                 else:
                     kept_lines.extend(read_block)
                     kept_count += 1
+                
+                # Update progress every 100 reads
+                if progress_placeholder and processed % 100 == 0:
+                    progress_placeholder.text(f"Processing reads: {processed:,}/{total_reads:,}")
+        
+        total = processed
+        # Final progress update
+        if progress_placeholder:
+            progress_placeholder.text(f"Processing reads: {total:,}/{total:,}")
+            
     else:  # FASTA
+        # First pass to count reads
+        total_reads = sum(1 for line in reads_lines if line.strip().startswith('>'))
+        
         current_header = ''
         current_seq = ''
         
@@ -221,7 +251,7 @@ def simple_filter_fallback(adapter_content, reads_content, reads_filename, param
             line = line.strip()
             if line.startswith('>'):
                 if current_header and current_seq:
-                    total += 1
+                    processed += 1
                     contaminated = any(adapter in current_seq.upper() for adapter in adapters)
                     
                     if contaminated:
@@ -230,6 +260,10 @@ def simple_filter_fallback(adapter_content, reads_content, reads_filename, param
                     else:
                         kept_lines.extend([current_header, current_seq])
                         kept_count += 1
+                    
+                    # Update progress every 100 reads
+                    if progress_placeholder and processed % 100 == 0:
+                        progress_placeholder.text(f"Processing reads: {processed:,}/{total_reads:,}")
                 
                 current_header = line
                 current_seq = ''
@@ -238,7 +272,7 @@ def simple_filter_fallback(adapter_content, reads_content, reads_filename, param
         
         # Handle last sequence
         if current_header and current_seq:
-            total += 1
+            processed += 1
             contaminated = any(adapter in current_seq.upper() for adapter in adapters)
             
             if contaminated:
@@ -247,6 +281,11 @@ def simple_filter_fallback(adapter_content, reads_content, reads_filename, param
             else:
                 kept_lines.extend([current_header, current_seq])
                 kept_count += 1
+        
+        total = processed
+        # Final progress update
+        if progress_placeholder:
+            progress_placeholder.text(f"Processing reads: {total:,}/{total:,}")
     
     kept_content = '\n'.join(kept_lines) + '\n' if kept_lines else ''
     discarded_content = '\n'.join(discarded_lines) + '\n' if discarded_lines else ''
@@ -289,13 +328,13 @@ def create_download_zip(kept_content, discarded_content, log_content, reads_file
 def main():
     # Header
     st.title("🧬 Mid-Read Barcode Trimmer")
-    st.markdown("### Filter sequencing reads using Smith-Waterman alignment against adapter/barcode sequences for CZID.org analysis")
+    st.markdown("### Filter sequencing reads using Smith-Waterman alignment against adapter/barcode sequences")
     
     # Info box
     with st.container():
         st.info("""
         **How it works:** This tool uses Parasail SIMD Smith-Waterman alignment to identify and filter reads 
-        containing adapter/barcode sequences. Reads with alignment scores ≥ threshold are discarded as contaminated.
+        containing adapter/barcode sequences. Reads with alignment scores ≥ threshold are discarded as contaminated. If using for Oxford Nanopore data, use the default parameters.
         """)
     
     # Check dependencies status
@@ -366,17 +405,21 @@ def main():
                 'gap_extend': gap_extend
             }
             
-            # Show processing message
+            # Show processing message with progress placeholder
+            progress_placeholder = st.empty()
             with st.spinner('🔄 Processing your files... This may take a few minutes.'):
                 try:
                     # Read file contents
                     reads_content = reads_file.read().decode('utf-8')
                     adapter_content = adapter_file.read().decode('utf-8')
                     
-                    # Process files
+                    # Process files with progress tracking
                     kept_content, discarded_content, log_content = filter_reads_web(
-                        adapter_content, reads_content, reads_file.name, params
+                        adapter_content, reads_content, reads_file.name, params, progress_placeholder
                     )
+                    
+                    # Clear progress display
+                    progress_placeholder.empty()
                     
                     # Store results in session state
                     st.session_state.results = {
