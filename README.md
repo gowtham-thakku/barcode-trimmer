@@ -44,10 +44,10 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 3. **Run with desired upload limit:**
    ```bash
    # For 5GB limit
-   streamlit run streamlit_app.py --server.maxUploadSize=5120
+   streamlit run barcode_trimmer_streamlit_app.py --server.maxUploadSize=5120
 
    # For 10GB limit  
-   streamlit run streamlit_app.py --server.maxUploadSize=10240
+   streamlit run barcode_trimmer_streamlit_app.py --server.maxUploadSize=10240
 
 
 ## 🎯 How to Use
