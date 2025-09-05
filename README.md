@@ -62,7 +62,7 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| **Min Score Threshold** | 25 | Minimum alignment score to mark read as contaminated |
+| **Min Score Threshold** | 30 | Minimum alignment score to mark read as contaminated |
 | **Match Score** | 2 | Points awarded for nucleotide matches |
 | **Mismatch Penalty** | -1 | Points deducted for mismatches |
 | **Gap Open Penalty** | 5 | Cost to start a gap in alignment |
