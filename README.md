@@ -1,4 +1,4 @@
-# barcode-trimmer
+# barcode-trimmer*
 barcode-trimmer filters sequencing reads that contain barcodes or adapters using Smith–Waterman alignment. It helps clean raw data before downstream analysis. It was specifically designed to remove mid-read barcodes from Oxford Nanopore data to address the technical issue of barcode bleeding. It is however generalizable for other types of inputs/filtering.
 
 ## 🚀 Usage Options
@@ -68,4 +68,4 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 | **Gap Open Penalty** | 5 | Cost to start a gap in alignment |
 | **Gap Extend Penalty** | 1 | Cost to extend an existing gap |
 
-
+*Note: This code was generated using the assistance of Claude Code, but included specific prompts to which bioinformatics tools to use (e.g Parasail); the code has been validated using multiple datasets.
