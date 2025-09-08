@@ -68,4 +68,4 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 | **Gap Open Penalty** | 5 | Cost to start a gap in alignment |
 | **Gap Extend Penalty** | 1 | Cost to extend an existing gap |
 
-*Note: This code was generated using the assistance of Claude Code, but included specific prompts to which bioinformatics tools to use (e.g Parasail); the code has been validated using multiple datasets.
+*Note: This code was generated using the assistance of Claude Code, but included specific prompts to which bioinformatics tools to use (e.g Parasail); the code has been validated using multiple datasets. Default thresholds were optimized using these datasets.
