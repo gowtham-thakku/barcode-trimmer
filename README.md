@@ -36,7 +36,7 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/barcode-trimmer.git
+   git clone https://github.com/gowtham-thakku/barcode-trimmer.git
    cd barcode-trimmer
 2. **Install dependencies:**
    ```bash
