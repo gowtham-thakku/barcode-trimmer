@@ -1,16 +1,16 @@
 # barcode-trimmer*
 barcode-trimmer filters sequencing reads that contain barcodes or adapters using Smith–Waterman alignment. It helps clean raw data before downstream analysis. It was specifically designed to remove mid-read barcodes from Oxford Nanopore data to address the technical issue of barcode bleeding. It is however generalizable for other types of inputs/filtering.
 
-## 🚀 Usage Options
+## Usage Options
 
 ### Option 1: Web App (Easiest)
 **Access at: [barcode-trimmer.streamlit.app](https://barcode-trimmer.streamlit.app)**
 
-✅ **Pros:**
+**Pros:**
 - No installation required
 - Works in any browser
 
-⚠️ **Cons:**
+**Cons:**
 - **File size limit: 200MB per file** (Streamlit Community Cloud restriction)
 - Processing may be slower on shared resources
 
@@ -21,13 +21,13 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 ### Option 2: Local Installation (For Large Files)
 **Run on your own computer with custom limits**
 
-✅ **Pros:**
+**Pros:**
 - **File size limit: 2GB+ (configurable up to your system's memory)**
 - Faster processing on dedicated hardware
 - Full control over resources
 - Private - your data never leaves your computer
 
-⚠️ **Cons:**
+**Cons:**
 - Local installation needed (but only 3-4 lines of command line code! A local instance of the app will be launched on your browser)
 
 **Best for:** Large files (>200MB), sensitive data, high-performance processing
@@ -50,7 +50,7 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
    streamlit run barcode_trimmer_streamlit_app.py --server.maxUploadSize=10240
 
 
-## 🎯 How to Use
+## How to Use
 
 1. **Upload your sequencing reads file** (FASTQ or FASTA)
 2. **Upload your adapter/barcode FASTA file** (list of Oxford Nanopore barcodes used in the Rapid PCR Barcoding kit is provided in the repo: ont_rlb_barcodes.fasta)
