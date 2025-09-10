@@ -32,7 +32,7 @@ barcode-trimmer filters sequencing reads that contain barcodes or adapters using
 
 **Best for:** Large files (>200MB), sensitive data, high-performance processing
 
-### 📥 Installation (local)
+### Installation (local)
 
 1. **Clone the repository:**
    ```bash
